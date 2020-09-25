@@ -66,8 +66,8 @@ function renderTodoList() {
   if (!data.todo.length) return;
 
   for (var i = 0; i < data.todo.length; i++) {
-    var value = data.todo[i].Task;
-    var id = data.todo[i].Id;
+    var value = data.todo[i].task;
+    var id = data.todo[i].id;
     addItemToDOM(value, id);
   }
 }

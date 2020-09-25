@@ -18,9 +18,9 @@ import (
 var db *gorm.DB
 
 type Todo struct {
-	gorm.Model
-	Task string
-	ID   string
+	gorm.Model `json:"-"`
+	Task       string `json:"task"`
+	ID         string `json:"id"`
 }
 
 func healthz(w http.ResponseWriter, r *http.Request) {

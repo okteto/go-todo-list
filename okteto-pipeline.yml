@@ -2,4 +2,4 @@ deploy:
   - helm upgrade --install postgresql okteto/postgresql
   - okteto build -t okteto.dev/todo-list:${OKTETO_GIT_COMMIT}
   - kustomize edit set image okteto.dev/todo-list=okteto.dev/todo-list:${OKTETO_GIT_COMMIT}
-  - kubectl apply -k manifests
+  - kubectl apply -k .
