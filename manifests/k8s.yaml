@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-list
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-list
+  template:
+    metadata:
+      labels:
+        app: todo-list
+    spec:
+      containers:
+      - image: okteto.dev/todo-list
+        name: todo-list
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-list
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+spec:
+  type: ClusterIP  
+  ports:
+  - name: "todo-list"
+    port: 8080
+  selector:
+    app: todo-list
