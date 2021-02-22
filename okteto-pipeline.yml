@@ -1,5 +1,5 @@
 deploy:
-  - helm upgrade --install postgresql okteto/postgresql
+  - helm upgrade --install postgresql okteto/postgresql --set persistence.annotations."dev\.okteto\.com/from-snapshot-id"=snapshot-2021-02-22
   - okteto build -t okteto.dev/todo-list:${OKTETO_GIT_COMMIT}
   - cd manifest; kustomize edit set image okteto.dev/todo-list=okteto.dev/todo-list:${OKTETO_GIT_COMMIT}
   - kubectl apply -k manifest
