@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -79,8 +79,10 @@ func getItems(w http.ResponseWriter, r *http.Request) {
 func main() {
 	log.Info("Starting API server")
 
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		"postgresql", 5432, "okteto", "okteto", "okteto")
+	dsn := os.Getenv("DSN")
+	if dsn == "" {
+		panic("DSN is missing")
+	}
 
 	var err error
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})

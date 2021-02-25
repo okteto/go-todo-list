@@ -15,7 +15,9 @@ spec:
       containers:
       - image: okteto.dev/todo-list
         name: todo-list
-
+        env:
+        - name: DSN 
+          value: "host=postgresql user=okteto password=okteto dbname=okteto port=5432 sslmode=disable"
 ---
 
 apiVersion: v1
