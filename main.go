@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"sort"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -17,6 +19,7 @@ import (
 
 var db *gorm.DB
 
+// Todo todo struct
 type Todo struct {
 	gorm.Model `json:"-"`
 	Task       string `json:"task"`
@@ -71,16 +74,23 @@ func getItems(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	sort.Slice(all, func(i, j int) bool {
+		return all[i].Task > all[j].Task
+	})
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(all)
 	log.Infof("got %d items", len(all))
 }
 
 func main() {
-	log.Info("Starting API server")
-
+	host := os.Getenv("POSTGRESQL_HOST")
+	username := os.Getenv("POSTGRESQL_USERNAME")
+	password := os.Getenv("POSTGRESQL_PASSWORD")
+	database := os.Getenv("POSTGRESQL_DATABASE")
+	log.Infof("Connecting to DB '%s'...", host)
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		"postgresql", 5432, "okteto", "okteto", "okteto")
+		host, 5432, username, password, database)
 
 	var err error
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -90,7 +100,7 @@ func main() {
 
 	db.AutoMigrate(&Todo{})
 
-	log.Infof("connected to the DB")
+	log.Infof("Connected to DB '%s'.", host)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/healthz", healthz).Methods("GET")
@@ -103,5 +113,6 @@ func main() {
 		AllowedMethods: []string{"GET", "POST", "DELETE", "PATCH", "OPTIONS"},
 	}).Handler(router)
 
+	log.Info("Starting API server...")
 	http.ListenAndServe(":8080", handler)
 }
