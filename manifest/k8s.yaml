@@ -17,7 +17,7 @@ spec:
         name: todo-list
         env:
           - name: POSTGRESQL_HOST
-            value: postgresql
+            value: db
           - name: POSTGRESQL_USERNAME
             value: okteto
           - name: POSTGRESQL_PASSWORD
