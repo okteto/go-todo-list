@@ -24,6 +24,11 @@ spec:
             value: okteto
           - name: POSTGRESQL_DATABASE
             value: okteto
+        readinessProbe:
+          periodSeconds: 1
+          httpGet:
+            path: /healthz
+            port: 8080
 
 ---
 
