@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -31,18 +32,24 @@ func healthz(w http.ResponseWriter, r *http.Request) {
 }
 
 func createItem(w http.ResponseWriter, r *http.Request) {
+	log.Info("create item")
 	task := r.FormValue("task")
 	todo := &Todo{Task: task, ID: uuid.New().String()}
-	result := db.Create(todo)
-	if result.Error != nil {
-		log.Error(result.Error)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+	for i := 0; i < 10; i++ {
+		result := db.Create(todo)
+		if result.Error == nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(todo)
+			log.Info("saved todo item")
+
+			return
+		}
+
+		<-time.After(1 * time.Second)
+		log.Info("failed to connect, retrying: %w", result.Error)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(todo)
-	log.Info("saved todo item")
+	w.WriteHeader(http.StatusInternalServerError)
 }
 
 func deleteItem(w http.ResponseWriter, r *http.Request) {
@@ -66,21 +73,28 @@ func deleteItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func getItems(w http.ResponseWriter, r *http.Request) {
+	log.Info("get items")
 	var all []Todo
-	result := db.Find(&all)
-	if result.Error != nil {
-		log.Error(result.Error)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+
+	for i := 0; i < 10; i++ {
+		result := db.Find(&all)
+		if result.Error == nil {
+			sort.Slice(all, func(i, j int) bool {
+				return all[i].Task > all[j].Task
+			})
+
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(all)
+			log.Infof("got %d items", len(all))
+			return
+		}
+
+		<-time.After(1 * time.Second)
+		log.Info("failed to connect, retrying: %w", result.Error)
 	}
 
-	sort.Slice(all, func(i, j int) bool {
-		return all[i].Task > all[j].Task
-	})
+	w.WriteHeader(http.StatusInternalServerError)
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(all)
-	log.Infof("got %d items", len(all))
 }
 
 func main() {
