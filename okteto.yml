@@ -1,12 +1,12 @@
 build:
-  todo-list:
-    image: okteto.dev/todo-list
+  go-todo-list:
+    image: okteto.dev/go-todo-list:001
 
 deploy:
   - kubectl apply -f k8s.yml
 
 dev:
-  todo-list:
+  go-todo-list:
     image: okteto/golang:1
     command: bash
     securityContext:
