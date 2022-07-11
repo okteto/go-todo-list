@@ -1,6 +1,10 @@
 build:
   todo-list:
     image: okteto.dev/todo-list:001
+    context: .
+  todo-list-dev:
+    context: .
+    target: builder
 
 deploy:
   - cd manifests; kustomize edit set image okteto.dev/todo-list=${OKTETO_BUILD_TODO_LIST_IMAGE}
@@ -8,16 +12,16 @@ deploy:
 
 dev:
   todo-list:
+    image: ${OKTETO_BUILD_TODO_LIST_DEV_IMAGE}
     command: bash
-    securityContext:
-      capabilities:
-        add:
-        - SYS_PTRACE
+    sync:
+      - .:/app
     volumes:
     - /go/pkg/
     - /root/.cache/go-build/
-    workdir: /app
-    sync:
-    - .:/app
+    securityContext:
+      capabilities:
+        add:
+          - SYS_PTRACE
     forward:
     - 2345:2345

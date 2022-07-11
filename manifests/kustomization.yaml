@@ -4,6 +4,6 @@ resources:
 - k8s.yaml
 - postgres.yaml
 images:
-- digest: sha256:24134b4b658a46b00f8a5c86735a6a84f7be00a4457cf0a2301e1f25c1bb6946
+- digest: sha256:6886c0ac88a448d97db704568d62c54c5eb3bc41f372dca9ba5014f8261e3054
   name: okteto.dev/todo-list
   newName: registry.cloud.okteto.net/gabriel-okteto/todo-list
