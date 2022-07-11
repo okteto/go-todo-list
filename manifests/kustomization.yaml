@@ -1,5 +1,9 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - k8s.yaml
-  - postgres.yaml
+- k8s.yaml
+- postgres.yaml
+images:
+- digest: sha256:24134b4b658a46b00f8a5c86735a6a84f7be00a4457cf0a2301e1f25c1bb6946
+  name: okteto.dev/todo-list
+  newName: registry.cloud.okteto.net/gabriel-okteto/todo-list

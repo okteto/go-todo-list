@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: go-todo-list
+  name: todo-list
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: go-todo-list
+      app: todo-list
   template:
     metadata:
       labels:
-        app: go-todo-list
+        app: todo-list
     spec:
       containers:
-        - image: okteto.dev/go-todo-list:001
-          name: go-todo-list
+        - image: okteto.dev/todo-list:001
+          name: todo-list
           env:
             - name: POSTGRESQL_HOST
               value: db
@@ -35,30 +35,30 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: go-todo-list
+  name: todo-list
 spec:
   type: LoadBalancer
   ports:
-    - name: "go-todo-list"
+    - name: "todo-list"
       port: 8080
   selector:
-    app: go-todo-list
+    app: todo-list
 
 ---
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: go-todo-list
+  name: todo-list
   annotations:
-    dev.okteto.com/generate-host: go-todo-list
+    dev.okteto.com/generate-host: todo-list
 spec:
   rules:
     - http:
         paths:
           - backend:
               service:
-                name: go-todo-list
+                name: todo-list
                 port:
                   number: 8080
             path: /

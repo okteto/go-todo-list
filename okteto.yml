@@ -1,13 +1,13 @@
 build:
-  go-todo-list:
-    image: okteto.dev/go-todo-list:001
+  todo-list:
+    image: okteto.dev/todo-list:001
 
 deploy:
+  - cd manifests; kustomize edit set image okteto.dev/todo-list=${OKTETO_BUILD_TODO_LIST_IMAGE}
   - kubectl apply -k manifests
 
 dev:
-  go-todo-list:
-    image: okteto/golang:1
+  todo-list:
     command: bash
     securityContext:
       capabilities:
