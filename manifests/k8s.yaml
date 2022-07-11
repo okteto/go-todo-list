@@ -13,7 +13,7 @@ spec:
         app: todo-list
     spec:
       containers:
-        - image: okteto.dev/todo-list:001
+        - image: okteto.dev/todo-list:1.0.0
           name: todo-list
           env:
             - name: POSTGRESQL_HOST
