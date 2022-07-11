@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-list
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-list
+  template:
+    metadata:
+      labels:
+        app: todo-list
+    spec:
+      containers:
+      - image: okteto.dev/todo-list
+        name: todo-list
+        env:
+          - name: POSTGRESQL_HOST
+            value: db
+          - name: POSTGRESQL_USERNAME
+            value: okteto
+          - name: POSTGRESQL_PASSWORD
+            value: okteto
+          - name: POSTGRESQL_DATABASE
+            value: okteto
+        readinessProbe:
+          periodSeconds: 1
+          httpGet:
+            path: /healthz
+            port: 8080
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-list
+spec:
+  type: LoadBalancer
+  ports:
+  - name: "todo-list"
+    port: 8080
+  selector:
+    app: todo-list
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: todo-list
+  annotations:
+    dev.okteto.com/generate-host: todo-list
+spec:
+  rules:
+    - http:
+        paths:
+          - backend:
+              service:
+                name: todo-list
+                port:
+                  number: 8080
+            path: /
+            pathType: ImplementationSpecific
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+  labels:
+    app: db
+spec:
+  serviceName: db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - image: postgres:9.4
+          name: db
+          env:
+            - name: POSTGRES_USER
+              value: okteto
+            - name: POSTGRES_PASSWORD
+              value: okteto
+            - name: POSTGRES_DB
+              value: okteto
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: data
+              subPath: data
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    app: db

@@ -1,10 +1,10 @@
 build:
   todo-list:
     image: okteto.dev/todo-list
-  
+
 deploy:
-  - cd manifest; kustomize edit set image okteto.dev/todo-list=${OKTETO_BUILD_TODO_LIST_IMAGE}
-  - kubectl apply -k manifest
+  - kubectl apply -f k8s.yml
+
 dev:
   todo-list:
     image: okteto/golang:1
