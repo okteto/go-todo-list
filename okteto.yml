@@ -3,7 +3,7 @@ build:
     image: okteto.dev/go-todo-list:001
 
 deploy:
-  - kubectl apply -f k8s.yml
+  - kubectl apply -k manifests
 
 dev:
   go-todo-list:

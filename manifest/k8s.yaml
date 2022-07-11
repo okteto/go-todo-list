@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-todo-list
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: go-todo-list
+  template:
+    metadata:
+      labels:
+        app: go-todo-list
+    spec:
+      containers:
+        - image: okteto.dev/go-todo-list:001
+          name: go-todo-list
+          env:
+            - name: POSTGRESQL_HOST
+              value: db
+            - name: POSTGRESQL_USERNAME
+              value: okteto
+            - name: POSTGRESQL_PASSWORD
+              value: okteto
+            - name: POSTGRESQL_DATABASE
+              value: okteto
+          readinessProbe:
+            periodSeconds: 1
+            httpGet:
+              path: /healthz
+              port: 8080
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-todo-list
+spec:
+  type: LoadBalancer
+  ports:
+    - name: "go-todo-list"
+      port: 8080
+  selector:
+    app: go-todo-list
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: go-todo-list
+  annotations:
+    dev.okteto.com/generate-host: go-todo-list
+spec:
+  rules:
+    - http:
+        paths:
+          - backend:
+              service:
+                name: go-todo-list
+                port:
+                  number: 8080
+            path: /
+            pathType: ImplementationSpecific
