@@ -3,7 +3,3 @@ kind: Kustomization
 resources:
 - k8s.yaml
 - postgres.yaml
-images:
-- digest: sha256:6886c0ac88a448d97db704568d62c54c5eb3bc41f372dca9ba5014f8261e3054
-  name: okteto.dev/todo-list
-  newName: registry.cloud.okteto.net/gabriel-okteto/todo-list
