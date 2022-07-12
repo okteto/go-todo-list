@@ -1,6 +1,6 @@
 build:
   todo-list:
-  - image: okteto.dev/todo-list:1.0.0
+    image: okteto.dev/todo-list:1.0.0
     context: .
   todo-list-dev:
     context: .
