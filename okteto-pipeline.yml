@@ -1,4 +1,0 @@
-deploy:
-  - okteto build -t okteto.dev/todo-list:${OKTETO_GIT_COMMIT}
-  - cd manifest; kustomize edit set image okteto.dev/todo-list=okteto.dev/todo-list:${OKTETO_GIT_COMMIT}
-  - kubectl apply -k manifest

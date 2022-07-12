@@ -1,23 +1,27 @@
 build:
   todo-list:
-    image: okteto.dev/todo-list
-  
+    image: okteto.dev/todo-list:1.0.0
+    context: .
+  todo-list-dev:
+    context: .
+    target: builder
+
 deploy:
-  - cd manifest; kustomize edit set image okteto.dev/todo-list=${OKTETO_BUILD_TODO_LIST_IMAGE}
-  - kubectl apply -k manifest
+  - cd manifests; kustomize edit set image okteto.dev/todo-list=${OKTETO_BUILD_TODO_LIST_IMAGE}
+  - kubectl apply -k manifests
+
 dev:
   todo-list:
-    image: okteto/golang:1
+    image: ${OKTETO_BUILD_TODO_LIST_DEV_IMAGE}
     command: bash
-    securityContext:
-      capabilities:
-        add:
-        - SYS_PTRACE
+    sync:
+      - .:/app
     volumes:
     - /go/pkg/
     - /root/.cache/go-build/
-    workdir: /app
-    sync:
-    - .:/app
+    securityContext:
+      capabilities:
+        add:
+          - SYS_PTRACE
     forward:
     - 2345:2345
